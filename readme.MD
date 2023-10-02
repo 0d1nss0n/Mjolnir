@@ -2,7 +2,7 @@
 
 Mjolnir is a Python script designed for web stress testing. It allows you to send multiple packets of varying sizes to a specified web server, helping you evaluate the server's response under load. This tool is created for educational purposes and should be used responsibly. The creator (0d1nss0n) is not responsible for any malicious use of this program.
 
-![alt text]()
+![alt text](https://raw.githubusercontent.com/0d1nss0n/Mjolnir/main/img/mjolnir.png)
 
 ## Features
 - Send multiple packets with three size options to a web server.
