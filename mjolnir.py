@@ -44,6 +44,7 @@ print('''
                                                          
 -Created by 0d1nss0n
 
+-Deny their service with the full weight of the Ban Hammer
 -This tool is for educational purposes only
 -I am not responsible for any malicious use
  of this program
